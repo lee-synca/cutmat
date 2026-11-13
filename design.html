@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cutmat Design — lay out posts, slides and flyers on your device</title>
+<meta name="description" content="Lay out social posts, slides and flyers with text, shapes and your own images. Nothing is uploaded.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&family=Caveat:wght@400;700&family=DM+Serif+Display&family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="design.css">
+</head>
+<body class="design">
+<header class="top">
+  <div class="top-left">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Cutmat</div>
+    <nav class="nav" aria-label="Tools">
+      <a href="index.html">Batch tools</a>
+      <a href="design.html" aria-current="page">Design</a>
+    </nav>
+  </div>
+
+  <div class="doc-tools">
+    <input type="text" id="doc-name" aria-label="Design name" maxlength="60" spellcheck="false">
+    <button type="button" class="btn slim" id="undo" disabled>Undo</button>
+    <button type="button" class="btn slim" id="redo" disabled>Redo</button>
+    <span class="zoom" role="group" aria-label="Zoom">
+      <button type="button" class="btn slim" id="zoom-out" aria-label="Zoom out">−</button>
+      <output id="zoom-v">100%</output>
+      <button type="button" class="btn slim" id="zoom-in" aria-label="Zoom in">+</button>
+      <button type="button" class="btn slim" id="zoom-fit">Fit</button>
+    </span>
+  </div>
+
+  <div class="top-right">
+    <button type="button" class="btn slim" id="acct-btn" hidden>Sign in</button>
+    <details class="menu" id="file-menu">
+      <summary class="btn">File</summary>
+      <div class="menu-pop">
+        <button type="button" class="menu-item" id="file-new">New design</button>
+        <button type="button" class="menu-item" id="file-lib">My designs</button>
+        <button type="button" class="menu-item" id="file-open">Open a saved copy</button>
+        <button type="button" class="menu-item" id="file-save">Save a copy</button>
+        <button type="button" class="menu-item" id="file-keys">Keyboard shortcuts</button>
+        <p class="hint">Your design is also kept in this browser as you work.</p>
+      </div>
+    </details>
+    <details class="menu" id="dl-menu">
+      <summary class="btn primary">Download</summary>
+      <div class="menu-pop wide-pop">
+        <label class="field"><span class="lab">Format</span>
+          <select id="dl-format">
+            <option value="png">PNG, sharpest for graphics</option>
+            <option value="jpg">JPG, smaller file</option>
+            <option value="pdf">PDF, for printing</option>
+          </select>
+        </label>
+        <label class="field"><span class="lab">Size</span>
+          <select id="dl-scale"></select>
+        </label>
+        <label class="field" id="dl-pages-f" hidden><span class="lab">Pages</span>
+          <select id="dl-pages">
+            <option value="one">This page</option>
+            <option value="all">All pages</option>
+          </select>
+        </label>
+        <p class="hint" id="dl-note" aria-live="polite"></p>
+        <button type="button" class="btn primary wide" id="dl-go">Download</button>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main class="studio">
+  <section class="panel tools" aria-label="Add to the page">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tab-templates" aria-controls="p-templates" aria-selected="true">Templates</button>
+      <button type="button" role="tab" id="tab-text" aria-controls="p-text" aria-selected="false">Text</button>
+      <button type="button" role="tab" id="tab-shapes" aria-controls="p-shapes" aria-selected="false">Shapes</button>
+      <button type="button" role="tab" id="tab-images" aria-controls="p-images" aria-selected="false">Images</button>
+    </div>
+
+    <div class="tabpanel" id="p-templates" role="tabpanel" aria-labelledby="tab-templates">
+      <p class="hint">A template replaces what is on the page. Undo brings your design back.</p>
+      <div class="tpl-grid" id="tpl-grid"></div>
+    </div>
+
+    <div class="tabpanel" id="p-text" role="tabpanel" aria-labelledby="tab-text" hidden>
+      <button type="button" class="add-text t-head" data-text="heading">Add a heading</button>
+      <button type="button" class="add-text t-sub" data-text="sub">Add a subheading</button>
+      <button type="button" class="add-text t-body" data-text="body">Add body text</button>
+      <p class="hint">Double-click text on the page to edit it.</p>
+    </div>
+
+    <div class="tabpanel" id="p-shapes" role="tabpanel" aria-labelledby="tab-shapes" hidden>
+      <div class="shape-grid" id="shape-grid"></div>
+    </div>
+
+    <div class="tabpanel" id="p-images" role="tabpanel" aria-labelledby="tab-images" hidden>
+      <button type="button" class="btn primary wide" id="img-pick">Choose images</button>
+      <p class="hint">Or drop them on the mat, or paste with Ctrl+V. They stay on this device.</p>
+      <div class="img-grid" id="img-grid"></div>
+      <input type="file" id="img-file" accept="image/*" multiple hidden>
+      <input type="file" id="open-file" accept=".json,application/json" hidden>
+    </div>
+  </section>
+
+  <section class="mat" id="mat" aria-label="Page">
+    <div class="stage-wrap" id="stage-wrap">
+      <div id="stage-host"></div>
+      <textarea id="text-edit" aria-label="Edit text" spellcheck="false"></textarea>
+    </div>
+    <div class="pages" id="pages" role="group" aria-label="Pages"></div>
+    <div class="readout">
+      <span id="stats" aria-live="polite"></span>
+      <span class="keys">Space + drag to pan · Ctrl + scroll to zoom</span>
+    </div>
+  </section>
+
+  <section class="panel inspector" aria-label="Edit selection">
+    <div id="props" class="props"></div>
+    <div class="layers">
+      <h3>Layers</h3>
+      <div id="layers" class="layer-list"></div>
+    </div>
+  </section>
+</main>
+
+<dialog id="lib" class="sheet" aria-labelledby="lib-h">
+  <div class="sheet-head">
+    <h2 id="lib-h">Designs</h2>
+    <button type="button" class="btn slim" id="lib-close">Close</button>
+  </div>
+  <h3>Start a new design</h3>
+  <div class="size-grid" id="size-grid"></div>
+  <h3>Your designs</h3>
+  <p class="hint" id="lib-cloud"></p>
+  <p class="hint" id="lib-empty">Nothing kept yet. Designs you make are kept in this browser and listed here.</p>
+  <div class="lib-grid" id="lib-grid"></div>
+</dialog>
+
+<dialog id="keys" class="sheet narrow" aria-labelledby="keys-h">
+  <div class="sheet-head">
+    <h2 id="keys-h">Keyboard shortcuts</h2>
+    <button type="button" class="btn slim" id="keys-close">Close</button>
+  </div>
+  <dl class="keys-list">
+    <dt>Ctrl + Z</dt><dd>Undo</dd>
+    <dt>Ctrl + Shift + Z</dt><dd>Redo</dd>
+    <dt>Ctrl + C, Ctrl + V</dt><dd>Copy and paste</dd>
+    <dt>Ctrl + D</dt><dd>Duplicate</dd>
+    <dt>Ctrl + A</dt><dd>Select everything on the page</dd>
+    <dt>Delete</dt><dd>Delete the selection</dd>
+    <dt>Arrow keys</dt><dd>Move by 1 px, or 10 px with Shift</dd>
+    <dt>Shift + click</dt><dd>Add to the selection</dd>
+    <dt>Double-click</dt><dd>Edit text, or crop an image</dd>
+    <dt>Space + drag</dt><dd>Move around the mat</dd>
+    <dt>Ctrl + scroll</dt><dd>Zoom</dd>
+    <dt>Ctrl + 0</dt><dd>Fit the page in view</dd>
+    <dt>Page Up, Page Down</dt><dd>Previous or next page</dd>
+    <dt>Esc</dt><dd>Clear the selection</dd>
+  </dl>
+</dialog>
+
+<dialog id="acct" class="sheet narrow" aria-labelledby="acct-h">
+  <div class="sheet-head">
+    <h2 id="acct-h">Sign in to Cutmat</h2>
+    <button type="button" class="btn slim" id="acct-close">Close</button>
+  </div>
+  <form id="acct-out" class="acct-form">
+    <p class="hint">An account keeps your designs online, so you can open them on another computer.</p>
+    <label class="field"><span class="lab">Email</span>
+      <input type="email" id="acct-email" autocomplete="email" required>
+    </label>
+    <label class="field"><span class="lab">Password</span>
+      <input type="password" id="acct-pass" autocomplete="current-password" minlength="8" required>
+    </label>
+    <div class="seg">
+      <button type="submit" class="btn primary">Sign in</button>
+      <button type="button" class="btn" id="acct-create">Create account</button>
+    </div>
+    <button type="button" class="link-btn" id="acct-forgot">Forgot your password?</button>
+  </form>
+  <div id="acct-in" class="acct-form" hidden>
+    <p>Signed in as <strong id="acct-email-v"></strong></p>
+    <p class="hint" id="acct-sync" aria-live="polite"></p>
+    <button type="button" class="btn" id="acct-signout">Sign out</button>
+    <p class="hint">Signing out leaves your designs on this device.</p>
+  </div>
+  <form id="acct-new" class="acct-form" hidden>
+    <label class="field"><span class="lab">New password</span>
+      <input type="password" id="acct-newpass" autocomplete="new-password" minlength="8" required>
+    </label>
+    <button type="submit" class="btn primary">Save new password</button>
+  </form>
+  <p class="hint acct-msg" id="acct-msg" aria-live="polite"></p>
+</dialog>
+
+<script src="cloud-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/konva@9.3.18/konva.min.js"></script>
+<script src="design.js"></script>
+</body>
+</html>

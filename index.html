@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cutmat — batch image tools that stay on your device</title>
+<meta name="description" content="Resize, crop, convert, compress and watermark a whole batch of images in one pass. Nothing is uploaded.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-left">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Cutmat</div>
+    <nav class="nav" aria-label="Tools">
+      <a href="index.html" aria-current="page">Batch tools</a>
+      <a href="design.html">Design</a>
+    </nav>
+  </div>
+  <p class="promise">Your images never leave this device.</p>
+</header>
+
+<main class="bench">
+  <section class="panel recipe" aria-labelledby="recipe-h">
+    <h2 id="recipe-h">Recipe</h2>
+    <p class="hint">Steps run top to bottom on every image.</p>
+    <div id="steps" class="steps"></div>
+    <div class="add-row" id="add-row" role="group" aria-label="Add a step"></div>
+
+    <div class="saved">
+      <h3>Saved recipes</h3>
+      <div class="row">
+        <select id="preset-list" aria-label="Load a saved recipe"></select>
+        <button type="button" class="btn ghost" id="preset-del" hidden>Delete</button>
+      </div>
+      <div class="row">
+        <input type="text" id="preset-name" placeholder="Name this recipe" aria-label="Recipe name" maxlength="40">
+        <button type="button" class="btn" id="preset-save">Save recipe</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="mat" id="mat" aria-label="Preview">
+    <div class="stage" id="stage">
+      <div class="empty" id="empty">
+        <h1>Drop images on the mat.</h1>
+        <p>Resize, crop, convert, compress and watermark a whole batch in one pass. Nothing is uploaded.</p>
+        <button type="button" class="btn primary big" id="pick">Choose images</button>
+        <p class="small">or paste with Ctrl+V</p>
+      </div>
+      <div class="frame" id="frame" hidden>
+        <img id="img-after" alt="Result preview">
+        <img id="img-before" alt="Original image">
+        <div class="handle" aria-hidden="true"></div>
+        <input type="range" id="cmp" min="0" max="100" value="50" aria-label="Compare original and result">
+        <span class="tag tag-l" aria-hidden="true">Original</span>
+        <span class="tag tag-r" aria-hidden="true">Result</span>
+        <div class="cropbox" id="cropbox" aria-hidden="true">
+          <i class="ch" data-h="nw"></i><i class="ch" data-h="n"></i><i class="ch" data-h="ne"></i><i class="ch" data-h="e"></i>
+          <i class="ch" data-h="se"></i><i class="ch" data-h="s"></i><i class="ch" data-h="sw"></i><i class="ch" data-h="w"></i>
+        </div>
+        <span class="rot rot-tl" aria-hidden="true"></span>
+        <span class="rot rot-tr" aria-hidden="true"></span>
+        <span class="rot rot-bl" aria-hidden="true"></span>
+        <span class="rot rot-br" aria-hidden="true"></span>
+      </div>
+      <p class="stage-msg" id="stage-msg" hidden></p>
+    </div>
+    <div class="readout" id="readout" hidden>
+      <span id="stats" aria-live="polite"></span>
+      <button type="button" class="btn onmat" id="zoom-reset" hidden>Reset zoom</button>
+      <button type="button" class="btn onmat" id="toggle-orig" aria-pressed="false" hidden>Show original</button>
+    </div>
+    <div class="strip" id="strip" hidden></div>
+    <input type="file" id="file" accept="image/*" multiple hidden>
+  </section>
+
+  <section class="panel output" aria-labelledby="out-h">
+    <h2 id="out-h">Output</h2>
+    <label class="field"><span class="lab">Format</span>
+      <select id="o-format"></select>
+    </label>
+    <label class="field"><span class="lab">Quality <output id="o-quality-v"></output></span>
+      <input type="range" id="o-quality" min="10" max="100" step="1">
+    </label>
+    <p class="hint" id="o-quality-note" hidden></p>
+    <label class="field"><span class="lab">Keep each file under (KB)</span>
+      <input type="number" id="o-target" min="1" placeholder="No limit" inputmode="numeric">
+    </label>
+    <label class="field"><span class="lab">File name</span>
+      <input type="text" id="o-pattern" spellcheck="false">
+    </label>
+    <p class="hint">Use <code>{name}</code>, <code>{w}</code>, <code>{h}</code> and <code>{n}</code> for the original name, new size and a counter.</p>
+
+    <button type="button" class="btn primary big wide" id="export" disabled>Download</button>
+    <p class="hint" id="export-msg" aria-live="polite"></p>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
